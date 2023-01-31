@@ -124,10 +124,13 @@ Importantly, you may never call an R object "data". This word is reserved for a 
 
 Run the first line of code below. Then, type in "long" and press `tab`. What happens?
 
-What happens if there is a typo in your code? Type the following in the R window: Long_name_for_illustration longnameforillustration
+What happens if there is a typo in your code? Type the following in the R window: 
+Long_name_for_illustration 
+longnameforillustration
 
 ```{r}
 long_name_for_illustration <- 11
+
 
 ```
 
@@ -139,6 +142,8 @@ Within your R code, it is often useful to include notes about your workflow. So 
 # I am demonstrating a comment here. 
 
 1 + 1 # This is a simple math problem
+# 1 + 1
+
 ```
 
 ### Functions
@@ -236,7 +241,7 @@ meal2 <- recipe4(2); meal2
 meal3 <- recipe5(3); meal3
 
 recipe6 <- function(x){
-  ifelse(x<3, x*2, x/2) #log_exp, if TRUE, if FALSE
+  ifelse(x<3, x*2, x/2) #log_exp (logical expression), if TRUE, if FALSE
   
 }
 

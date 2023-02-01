@@ -116,4 +116,4 @@ print(Failed_Students)
 
 12. QUESTION: Which option of `if` and `else` vs. `ifelse` worked? Why?
 
-> Answer: The option of ifelse works. The seperated if and else will display all of the command and output. 
+> Answer: The option of ifelse works. The ifelse function works well with longer vectors as where the seperated if/else works well with vectors that are a length of one. 

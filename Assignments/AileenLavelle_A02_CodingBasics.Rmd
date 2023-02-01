@@ -96,23 +96,24 @@ is.data.frame(df)
 11. Apply your function to the vector with test scores that you created in number 5.
 
 ```{r}
-Fail <- ifelse(student_scores<50, print("TRUE"), print("FALSE"))
-Fail
-
+#ifelse function
+Fail <- ifelse(student_scores<50, TRUE, FALSE)
+print(Fail)
+#seperate if/else statement
 Failed_Students <- function(student_scores) {
   if(x < 50) {
-    print("TRUE")
+      (TRUE)
   } 
   else if (x > 50) {
-    print("FALSE")
+      (FALSE)
   }
   else {
     x
   }
 }
-Failed_Students
+print(Failed_Students)
 ```
 
 12. QUESTION: Which option of `if` and `else` vs. `ifelse` worked? Why?
 
-> Answer: The option of if and else both work. The combined ifelse will display all of the command and output. 
+> Answer: The option of ifelse works. The seperated if and else will display all of the command and output. 

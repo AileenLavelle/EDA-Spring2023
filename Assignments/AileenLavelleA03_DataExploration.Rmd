@@ -34,8 +34,8 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Ex
 
 ```{r Set working directory and load packages,  message = FALSE}
 #set working directory
+#setwd('/Users/aileen/Desktop/Duke/Environmental_Data_Analytics/EDA_Spring_2023_corrected')
 getwd()
-setwd('/Users/aileen/Desktop/Duke/Environmental Data Analytics/EDA_Spring_2023_corrected/Data/Raw')
 
 #load necessary packages
 library(tidyverse)
@@ -45,10 +45,8 @@ library(RColorBrewer)
 library(ggplot2)
 
 #upload datasets and set as factors
-read.csv("ECOTOX_Neonicotinoids_Insects_raw.csv")
-read.csv("NEON_NIWO_Litter_massdata_2018-08_raw.csv")
-Neonics <- read.csv("ECOTOX_Neonicotinoids_Insects_raw.csv")
-Litter <- read.csv("NEON_NIWO_Litter_massdata_2018-08_raw.csv")
+Neonics <- read.csv("./Data/Raw/ECOTOX_Neonicotinoids_Insects_raw.csv")
+Litter <- read.csv("./Data/Raw/NEON_NIWO_Litter_massdata_2018-08_raw.csv")
 ```
 
 ## Learn about your system
@@ -117,18 +115,18 @@ class("Conc.1..Author.")
 ```{r Plot number of studies by publication year}
 #Creating a plot of number of studies by publication year
 ggplot(Neonics) +
-  geom_freqpoly(aes(x = Publication.Year))
+  geom_freqpoly(aes(x = Publication.Year), bins=50)
 ```
 
 10. Reproduce the same graph but now add a color aesthetic so that different Test.Location are displayed as different colors.
 
 ```{r Plot number of studies by publication year and change color}
 #checking NAs
-is.na(Neonics$Test.Location)
+#is.na(Neonics$Test.Location)
 #Removing NAs
 NeonicsComplete <- na.omit(Neonics$Test.Location)
 #Plot Neonics with Publication.Year and Test.Location in different colors
-ggplot(Neonics) + geom_freqpoly(aes(x = Publication.Year, color = Test.Location))
+ggplot(Neonics) + geom_freqpoly(aes(x = Publication.Year, color = Test.Location), bins=50)
 ```
 
 Interpret this graph. What are the most common test locations, and do they differ over time?
@@ -141,7 +139,7 @@ Interpret this graph. What are the most common test locations, and do they diffe
 
 ```{r Endpoint Counts}
 #Plot Endpoint Counts
-ggplot(Neonicsnew, aes(x = Neonicsnew$Endpoint)) +
+ggplot(Neonicsnew, aes(x = Endpoint)) +
   geom_bar() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 ```
 
@@ -170,7 +168,7 @@ summary(Litter$collectDate <- as.Date(Litter$collectDate, format = "%Y%m%d"))
 
 #use unique function to look at August 2018
 unique(Litter)
-#August 6th 2018 & August 2nd 2018
+#August 2nd 2018, August 6th 2018, and August 30th 2018.
 ```
 
 13. Using the `unique` function, determine how many plots were sampled at Niwot Ridge. How is the information obtained from `unique` different from that obtained from `summary`?
@@ -213,13 +211,13 @@ Why is the boxplot a more effective visualization option than the violin plot in
 
 What type(s) of litter tend to have the highest biomass at these sites?
 
-> Answer:Needles had the highest biomass at these sites and had a very large range of dry mass. Mixed functional groups followed by Twig/branches also had high dry biomass.
+> Answer: Needles had the highest biomass at these sites and had a very large range of dry mass. Mixed functional groups followed by Twig/branches also had high dry biomass.
 
 ```{r page formatting, include=FALSE}
 #install.packages('formatR')
 library(formatR)
-knitr::opts_chunk$set(tidy.opts=list(width.cutoff=80), tidy=TRUE)
+#knitr::opts_chunk$set(tidy.opts=list(width.cutoff=80), tidy=TRUE)
 #debugging
-options(tinytex.verbose = TRUE)
+#options(tinytex.verbose = TRUE)
 ```
 ```

@@ -25,7 +25,9 @@ Opening discussion: why might we be interested in long-term observations of temp
 #Install packages
 library(tidyverse)
 library(lubridate)
-library(here) #The here package allows for better control of relative paths
+install.packages("here")
+library(here) 
+#The here package allows for better control of relative paths
 
 #Ensure that "here" points to your project folder
 here()
@@ -52,7 +54,7 @@ NTL.phys.data$sampledate <- mdy(NTL.phys.data$sampledate)
 
 Filtering allows us to choose certain rows (observations) in our dataset.
 
-```{r}
+```{r Filter}
 # note the data types of these two columns
 class(NTL.phys.data$lakeid)
 class(NTL.phys.data$depth)

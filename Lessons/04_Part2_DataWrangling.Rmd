@@ -34,10 +34,9 @@ summary(NTL.phys.data.PeterPaul$comments)
 class(NTL.phys.data.PeterPaul$sampledate)
 
 # Format sampledate as date
-<<<<<<< HEAD
+
 #date is formmatted differently than last time
-=======
->>>>>>> 47025eac39b6a0bab20568a9c048bb8cc3d204ee
+
 NTL.phys.data.PeterPaul$sampledate <- as.Date(NTL.phys.data.PeterPaul$sampledate, format = "%Y-%m-%d")
 
 # Select Peter and Paul Lakes from the nutrient dataset
@@ -60,11 +59,10 @@ NTL.nutrient.data.PeterPaul <-
   mutate(month = month(sampledate)) %>% #
   select(lakeid:daynum, month, sampledate:comments) %>% # 
   drop_na(depth)
-<<<<<<< HEAD
-summary(NTL.nutrient.data.PeterPaul$depth)
-=======
 
->>>>>>> 47025eac39b6a0bab20568a9c048bb8cc3d204ee
+summary(NTL.nutrient.data.PeterPaul$depth)
+
+
 # Save processed nutrient file
 write.csv(NTL.nutrient.data.PeterPaul, row.names = FALSE, 
           file = "./Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaul_Processed.csv")
@@ -92,33 +90,30 @@ However, there may be situations where we want to reshape our dataset, for examp
 
 We will work with the new functions from `tidyr`. For gather we will use `pivot_longer` and for spread we will use `pivot_wider`. Note that if you are familiar with `gather` and `spread` will may still use it, they are not going away, but they are not under active development.
 
-<<<<<<< HEAD
+
 ```{r Gather and Spread}
 # Gather nutrient data into one column
 #Gather transforms columns into rows
-=======
-```{r}
+
 # Gather nutrient data into one column
->>>>>>> 47025eac39b6a0bab20568a9c048bb8cc3d204ee
+
 #NTL.nutrient.data.PeterPaul.gathered <- gather(NTL.nutrient.data.PeterPaul.subset, "nutrient", "concentration", tn_ug:po4)
 
 # Gather nutrient data into one column using pivot_longer
 NTL.nutrient.data.PeterPaul.gathered <- pivot_longer(NTL.nutrient.data.PeterPaul.subset,tn_ug:po4, names_to = "nutrient", values_to = "concentration")
 
 NTL.nutrient.data.PeterPaul.gathered <- subset(NTL.nutrient.data.PeterPaul.gathered, !is.na(concentration))
-<<<<<<< HEAD
+
 #count how many observations we have
-=======
->>>>>>> 47025eac39b6a0bab20568a9c048bb8cc3d204ee
+
 count(NTL.nutrient.data.PeterPaul.gathered, nutrient)
 
 write.csv(NTL.nutrient.data.PeterPaul.gathered, row.names = FALSE, 
           file = "./Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaulGathered_Processed.csv")
 
-<<<<<<< HEAD
+
 #spread columns into rows
-=======
->>>>>>> 47025eac39b6a0bab20568a9c048bb8cc3d204ee
+
 # Spread nutrient data into separate columns
 #NTL.nutrient.data.PeterPaul.spread <- spread(NTL.nutrient.data.PeterPaul.gathered, nutrient, concentration)
 
@@ -150,9 +145,6 @@ Let's say we want to generate a new dataset that contains all possible physical 
 
 <<<<<<< HEAD
 ```{r Join}
-=======
-```{r}
->>>>>>> 47025eac39b6a0bab20568a9c048bb8cc3d204ee
 
 NTL.phys.nutrient.data.PeterPaul <- full_join(NTL.phys.data.PeterPaul.subset, NTL.nutrient.data.PeterPaul.subset)
 
@@ -168,9 +160,6 @@ The Niwot Ridge litter dataset, when downloaded from NEON, comes packaged with e
 <<<<<<< HEAD
 ```{r rbind}
 
-=======
-```{r}
->>>>>>> 47025eac39b6a0bab20568a9c048bb8cc3d204ee
 Litter.June2016 <- read.csv("./Data/Raw/NIWO_Litter/NEON_NIWO_Litter_massdata_2016-06_raw.csv")
 Litter.July2016 <- read.csv("./Data/Raw/NIWO_Litter/NEON_NIWO_Litter_massdata_2016-07_raw.csv")
 Litter.August2016 <- read.csv("./Data/Raw/NIWO_Litter/NEON_NIWO_Litter_massdata_2016-08_raw.csv")
@@ -184,10 +173,9 @@ However, there are 20 months in this dataset, so importing all these files indiv
 ```{r list}
 LitterFiles = list.files(path = "./Data/Raw/NIWO_Litter/", pattern="*.csv", full.names=TRUE)
 #all 20 litter files
-=======
-```{r}
+
 LitterFiles = list.files(path = "./Data/Raw/NIWO_Litter/", pattern="*.csv", full.names=TRUE)
->>>>>>> 47025eac39b6a0bab20568a9c048bb8cc3d204ee
+
 LitterFiles
 
 Litter <- LitterFiles %>%
@@ -197,9 +185,7 @@ Litter <- LitterFiles %>%
 We also have information about individual traps, including the location and type of landcover. Let's join these two datasets. Note that "siteID", "plotID" and "trapID" exist in both datasets, and we can join them by these conditions. Notice the dimensions of the final dataset.
 <<<<<<< HEAD
 ```{r join traps and litter}
-=======
-```{r}
->>>>>>> 47025eac39b6a0bab20568a9c048bb8cc3d204ee
+
 Trap <- read.csv("./Data/Raw/NEON_NIWO_Litter_trapdata_raw.csv")
 LitterTrap <- left_join(Litter, Trap, by = c("siteID", "plotID", "trapID"))
 
@@ -207,10 +193,9 @@ dim(Litter)
 dim(Trap)
 dim(LitterTrap)
 
-<<<<<<< HEAD
+
 #selecting columns of interest
-=======
->>>>>>> 47025eac39b6a0bab20568a9c048bb8cc3d204ee
+
 LitterTrap <- LitterTrap %>%
   select(plotID:trapID, collectDate, functionalGroup:qaDryMass, subplotID:geodeticDatum)
 
@@ -222,11 +207,9 @@ write.csv(LitterTrap, row.names = FALSE,
 
 dplyr functionality, combined with the pipes operator, allows us to split datasets according to groupings (function: `group_by`), then run operations on those groupings and return the output of those operations. There is a lot of flexibility in this approach, but we will illustrate just one example today.
 
-<<<<<<< HEAD
+
 ```{r Split-Apply-Combine}
-=======
-```{r}
->>>>>>> 47025eac39b6a0bab20568a9c048bb8cc3d204ee
+
 NTL.PeterPaul.summaries <- 
   NTL.phys.nutrient.data.PeterPaul %>%
   filter(depth == 0) %>%

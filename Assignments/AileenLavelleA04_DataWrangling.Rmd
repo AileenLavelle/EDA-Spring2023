@@ -109,6 +109,26 @@ PM25_2018$Date <- as.Date(PM25_2018$Date, format = "%m/%d/%y")
 O3_2018$Date <- as.Date(O3_2018$Date, format = "%m/%d/%y")
 O3_2019$Date <- as.Date(O3_2019$Date, format = "%m/%d/%y")
 
+#create dates function, so it is 2018 or 2019 not 2020
+fix.2019.dates <- function(d, cutoff) {
+       m <- year(d) 
+       year(d) <- ifelse(m < cutoff, m-0, m-1)  #this will update year(d), year() is a function that returns the year for a data object
+       return(d)}
+fix.2018.dates <- function(d, cutoff) {
+      m <- year(d)
+       year(d) <- ifelse(m < cutoff, m-0, m-2)  #this will update year(d), year() is a function that returns the year for a data object
+       return(d)}
+
+#apply fix early date function and check to see if it is the correct year
+PM25_2019$Date <- fix.2019.dates(PM25_2019$Date,cutoff=20)
+PM25_2019$Date
+PM25_2018$Date <- fix.2018.dates(PM25_2018$Date,cutoff=20)
+PM25_2018$Date
+O3_2019$Date <- fix.2019.dates(O3_2019$Date,cutoff=20)
+O3_2019$Date
+O3_2018$Date <- fix.2018.dates(O3_2018$Date,cutoff=20)
+O3_2018$Date
+
 #Double check that the conversion worked
 class(PM25_2019$Date)
 class(PM25_2018$Date)
@@ -198,14 +218,13 @@ EPAAirCombined <- rbind(PM25_2019_Refined, PM25_2018_Refined, O3_2019_Refined, O
 #wrangle data
 EPAAirModified <- 
   EPAAirCombined %>%
-  filter(Site.Name == "Linville Falls"| Site.Name == "Durham Armory"| Site.Name == "Leggett"| Site.Name == "Hattie Avenue"| Site.Name == "Clemmons Middle"| Site.Name == "Mendenhall School" | Site.Name == "Frying Pan Mountain" | Site.Name == "West Johnston Co."| Site.Name == "Garinger High School"| Site.Name == "Castle Hayne"| Site.Name == "Pitt Agri. Center"| Site.Name == "Bryson City"| Site.Name =="Millbrook School") %>%
-  drop_na(Site.Name) %>%
-  group_by(Date, Site.Name, AQS_PARAMETER_DESC, COUNTY) %>%
-  summarise(meanAQI = mean(DAILY_AQI_VALUE), 
-            meanlat = mean(SITE_LATITUDE), 
-            meanlong = mean(SITE_LONGITUDE)) %>%
-  mutate(Month = month(Date)) %>%
-  mutate(Year = year(Date))
+  filter(Site.Name %in% c("Linville Falls", "Durham Armory", "Leggett", "Hattie Avenue", "Clemmons Middle", "Mendenhall School", "Frying Pan Mountain", "West Johnston Co.", "Garinger High School", "Castle Hayne", "Pitt Agri. Center", "Bryson City", "Millbrook School")) %>%
+  group_by(Date,Site.Name,AQS_PARAMETER_DESC,COUNTY) %>%
+  summarise(meanAQI=mean(DAILY_AQI_VALUE), 
+            meanlat=mean(SITE_LATITUDE), 
+            meanlong=mean(SITE_LONGITUDE)) %>%
+  mutate(Month=month(Date), 
+         Year=year(Date))
 
 #9
 #Pivot wider to seperate all the variables of AQS_PARAMETER_DESC by mean AQI
@@ -247,4 +266,4 @@ dim(EPA.Air.summaries)
 
 14. Why did we use the function `drop_na` rather than `na.omit`?
 
-> Answer: 
+> Answer: The drop_na() drops rows where any column specified by "..." contains a missing value and is better used for numerical data. As where the na.omit R function removes all incomplete cases of a data object (typically of a data frame, matrix or vector). The main difference, it that we want to remove the missing numerical values and therefore drop_na is the better command.

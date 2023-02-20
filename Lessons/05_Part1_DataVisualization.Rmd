@@ -19,6 +19,8 @@ Effective data visualization depends on purposeful choices about graph types. Th
 ## Set Up
 
 ```{r, message = FALSE, warning = FALSE}
+getwd()
+
 library(tidyverse);library(lubridate);library(here)
 library(ggridges)
 
@@ -80,18 +82,21 @@ Here are some commonly used aesthetic types that can be manipulated in ggplot:
 # Scatterplot
 ggplot(EPAair, aes(x = Date, y = Ozone)) + 
   geom_point()
-
+#another way to make the same plot but in different way
 O3plot <- ggplot(EPAair) +
   geom_point(aes(x = Date, y = Ozone))
 print(O3plot)
 
 # Fix this code
+#change all the points to be blue, the color needs to be outside the parentheses
 O3plot2 <- ggplot(EPAair) +
-  geom_point(aes(x = Date, y = Ozone, color = "blue"))
+  #geom_point(aes(x = Date, y = Ozone, color = "blue"))
+  geom_point(aes(x = Date, y = Ozone), color = "blue")
 print(O3plot2)
 
 # Add additional variables
 # How could you automatically assign a marker color to a variable? 
+#chnage the shape based on year and color as a function of sitename
 PMplot <- 
   ggplot(EPAair, aes(x = Month, y = PM2.5, shape = as.factor(Year), color = Site.Name)) +
   geom_point()
@@ -128,12 +133,14 @@ print(PMplot.line)
 
 ```{r, fig.height = 3, fig.width = 4, warning = FALSE}
 # Scatterplot
+#including outliers
 lightvsDO <- 
   ggplot(PeterPaul.chem.nutrients, aes(x = irradianceWater, y = dissolvedOxygen)) +
   geom_point()
 print(lightvsDO)
 
 # Adjust axes
+#fixes outliers
 lightvsDOfixed <- 
   ggplot(PeterPaul.chem.nutrients, aes(x = irradianceWater, y = dissolvedOxygen)) +
   geom_point() +
@@ -149,6 +156,7 @@ tempvsdepth <-
   scale_y_reverse()
 print(tempvsdepth)
 
+#scatterplot, trendline and smooth
 NvsP <-
   ggplot(PeterPaul.chem.nutrients, aes(x = tp_ug, y = tn_ug, color = depth)) +
   geom_point() +
@@ -167,7 +175,9 @@ What might be more effective ways to display the information? Navigate to the bo
 # Box and whiskers plot
 Nutrientplot3 <-
   ggplot(PeterPaul.chem.nutrients.gathered, aes(x = lakename, y = concentration)) +
-  geom_boxplot(aes(color = nutrient)) # Why didn't we use "fill"?
+  geom_boxplot(aes(color = nutrient)) 
+# Why didn't we use "fill"?
+#color is the contour of the shape and fill is the fill of the box plot but outline remains black
 print(Nutrientplot3)
 
 # Dot plot
@@ -178,6 +188,7 @@ Nutrientplot4 <-
 print(Nutrientplot4)
 
 # Violin plot
+#rotated density plot
 Nutrientplot5 <-
   ggplot(PeterPaul.chem.nutrients.gathered, aes(x = lakename, y = concentration)) +
   geom_violin(aes(color = nutrient)) #

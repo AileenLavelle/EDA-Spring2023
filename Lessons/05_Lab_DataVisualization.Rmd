@@ -276,7 +276,7 @@ Surface_Temp_Day_plot <- Surface_Temp_Day %>%
     x= "Day Number",
     y= "Surface Temperature in Celcius",
     color= "Year") +
-  scale_color_viridis(, direction = -1)
+  scale_color_viridis
 #view plot
 Surface_Temp_Day_plot  
 #2. 

@@ -40,6 +40,9 @@ The expression function can be used when you want to add mathematical symbols an
 ```{r formatted text}
 
 #Create a plot
+#paste command brings together strings
+#paste 0 does not include spaces
+#expression command makes math mathematical formulas
 Plot_text <-
 ggplot(data=data.frame(x=0,y=0))+
   geom_point(aes(x=x,y=y)) +
@@ -54,7 +57,7 @@ print(Plot_text)
 
 #Save the plot
 ggsave(
-  filename = "./Output/Plot_text.jpg",
+  filename = "./Data/Raw/Plot_text.jpg",
   plot = Plot_text, 
   height = 4, 
   width = 6, 
@@ -83,6 +86,7 @@ EPAair <- read.csv(
   stringsAsFactors = TRUE)
 
 #Fix dates
+#use lubridate over as.date
 PeterPaul.chem.nutrients$sampledate <- ymd(PeterPaul.chem.nutrients$sampledate)
 EPAair$Date <- ymd(EPAair$Date)
 
@@ -93,17 +97,36 @@ Say we want to plot the number of records each month in the Peter/Paul lakes dat
 
 ```{r Plot the number of records by month}
 #What kind of values are months?
+class(PeterPaul.chem.nutrients$month)
 
 #List unique values
+unique(PeterPaul.chem.nutrients$month)
 
 #Plot how many Lake observations occur each month
-
+ggplot(PeterPaul.chem.nutrients,
+       aes(x=month)) +
+    geom_histogram(bins=12)
 #Convert month to a factor -- with 12 levels, labelled with month names
-
+factor(PeterPaul.chem.nutrients$month,
+       levels = 1:12,
+       labels= month.abb)
 #Try again: Plot how many Lake observations occur each month
-
+the_plot <- PeterPaul.chem.nutrients %>%
+  ggplot(
+       aes(x=factor(month, levels=1:12, labels=month.abb))) +
+    geom_bar() +
+  scale_x_discrete(drop=FALSE) +
+  labs(
+    title = "My Plot",
+    x= "Month",
+    y= "Count")
+  
 #Alter to include missing months
+#levels is number of categories
+#labels are the names of categories 
 
+#months of year
+month.abb
 #Tidy up the code
 
 ```
@@ -147,15 +170,22 @@ surface_temp_1999_plot +
   theme_gray()
 
 #Apply a ggtheme
+#mimics wall street journal
 surface_temp_1999_plot + 
   theme_wsj() + 
   scale_color_wsj()
+#excel
+surface_temp_1999_plot + 
+  theme_excel() + 
+  scale_color_excel()
 
 #Add a title
 surface_temp_1999_plot + 
   ggtitle("Surface temperature, 1999") +
   labs(color='Lake') + 
   theme_wsj()
+
+View(theme_wsj())
 ```
 
 
@@ -228,8 +258,27 @@ Exercise: build your own scatterplots of PeterPaul.chem.nutrients
 # Plot surface temperatures by day of  year. 
 # Color your points by year, and facet by lake in two rows.
 # Change the ylab name
+Surface_Temp_Day <- PeterPaul.chem.nutrients %>%
+  filter(depth == 0) %>%
+  group_by(lakename)
 
-
+#alpha sets transparency
+#facet_wrap(vars()) set apart data
+Surface_Temp_Day_plot <- Surface_Temp_Day %>%
+  ggplot(aes(
+      x=daynum,
+      y=temperature_C,
+      color= year4)) + 
+  geom_point(size=0.5, alpha=0.5)+ 
+  facet_wrap(vars(lakename))+
+  labs(
+    title = "Surface Temperature Vs. Day of Year",
+    x= "Day Number",
+    y= "Surface Temperature in Celcius",
+    color= "Year") +
+  scale_color_viridis(, direction = -1)
+#view plot
+Surface_Temp_Day_plot  
 #2. 
 # Plot temperature by date. Color your points by depth.
 # Change the size of your point to 0.5
@@ -237,7 +286,7 @@ Exercise: build your own scatterplots of PeterPaul.chem.nutrients
 # Change x axis to include marker/labels every 5 years
 
 
-
+  scale_color_viridis(option = "magma", direction = -1)
 ```
 ## Plotting the relationship between two continuous variables: Scatterplot
 

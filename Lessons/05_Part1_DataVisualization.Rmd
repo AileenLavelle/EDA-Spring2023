@@ -146,6 +146,7 @@ lightvsDOfixed <-
   geom_point() +
   xlim(0, 250) +
   ylim(0, 20)
+
 print(lightvsDOfixed)
 
 # Depth in the fields of limnology and oceanography is on a reverse scale

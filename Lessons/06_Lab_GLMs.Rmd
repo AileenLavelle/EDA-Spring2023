@@ -120,6 +120,7 @@ step(Ozone.ALL)
 #Exercise 6: Run another regression using the variables selected on Exercise 6. Compare r-squared value with the one from Exercise 2. 
 Ozone.Best <- lm(data= EPAair, PM2.5 ~ Ozone + Month + mean_Lat + mean_Lng)
 summary(Ozone.Best)
+#including year does not increase the r-squared variable and makes the model more complicated but not better.
 ```
 
 

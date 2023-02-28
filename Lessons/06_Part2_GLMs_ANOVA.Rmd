@@ -95,6 +95,7 @@ plot(Litter.Totals.anova2)
 TukeyHSD(Litter.Totals.anova)
 
 # Extract groupings for pairwise relationships
+#if the groups have the same letter than they are the same mean
 Litter.Totals.groups <- HSD.test(Litter.Totals.anova, "plotID", group = TRUE)
 Litter.Totals.groups
 
@@ -112,7 +113,7 @@ print(Litter.Totals.plot)
 
 What information does the output give us? How might we report this information in a report?
 
-> 
+> The graph shows all the sites that have the same means We would want to reorder the lists of sites, from least to most.
 
 ## TWO-WAY ANOVA
 
@@ -126,6 +127,7 @@ Litter.anova.2way <- aov(data = Litter, dryMass ~ functionalGroup + nlcdClass)
 summary(Litter.anova.2way)
 
 # Format as lm
+#means are different among the different sites, same result as before
 Litter.anova.2way2 <- lm(data = Litter, dryMass ~ functionalGroup + nlcdClass)
 summary(Litter.anova.2way2)
 
@@ -142,7 +144,9 @@ The output gives test statistics for each explanatory variable as well as the in
 
 ```{r}
 # Format as aov
+# * is interaction among them
 Litter.anova.2way3 <- aov(data = Litter, dryMass ~ functionalGroup * nlcdClass)
+Litter.interaction <- with(Litter, interaction(functionalGroup, nlcdClass))
 summary(Litter.anova.2way3)
 
 # Format as lm
@@ -158,11 +162,9 @@ If the interaction is significant, we interpret pairwise differences for the int
 TukeyHSD(Litter.anova.2way3)
 
 Litter.interaction <- with(Litter, interaction(functionalGroup, nlcdClass))
-
 #Litter.test <- cbind(Litter,Litter.interaction)
 
 Litter.anova.2way5 <- aov(data = Litter, dryMass ~ Litter.interaction)
-
 Litter.groups <- HSD.test(Litter.anova.2way5, "Litter.interaction", group = TRUE)
 Litter.groups
 

@@ -80,14 +80,13 @@ ChemPhysicsModified <- ChemPhysics %>%
 #plot temperature by depth
 temperaturebydepth <- 
   ggplot(ChemPhysicsModified, aes(y = temperature_C, x = depth)) +
-  geom_point(aes(color= lakename)) +
+  geom_point() +
   ylim(0,35) +
   geom_smooth(method = "lm", se = FALSE, color = "black") +
   labs(
     title = "Temperature by Depth",
     y= "Temperature (°C)",
-    x= "Depth (Meters)",
-    color= "Lake Name") +
+    x= "Depth (Meters)") +
   Aileentheme
 print(temperaturebydepth)
 ```

@@ -121,7 +121,12 @@ Shiny has many other input widgets: https://shiny.rstudio.com/gallery/widget-gal
 Note: Before running this plot, set the previous code chunk to not evaluate
 
 ```{r widget exploration, echo=FALSE}
+numericInput(
+  inputId = "nnn",
+  label = "How many cars?",
+  value = 5)
 
+renderPrint(paste("You chose", input$nnn))
 ```
 
 

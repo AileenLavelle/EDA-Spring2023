@@ -112,7 +112,7 @@ theme_set(my_theme)
 
 In a new code chunk named "load data", load the NTL-LTER_Lake_Nutrients_Raw dataset, convert dates, display the head of the dataset, and set the date column to a date format.Customize the chunk options such that the code is run but is not displayed in the knitted document. The output, however, should be displayed.
 
-```{r load data, echo = FALSE}
+```{r load data, echo=, warning=FALSE}
 #Load the data
 ntl.lter.raw <- read.csv(
   here('Data/Raw/NTL-LTER_Lake_Nutrients_Raw.csv'),
@@ -231,3 +231,5 @@ fig_height: 3\
 fig_width: 4\
 citation_package: natbib\
 template:
+
+

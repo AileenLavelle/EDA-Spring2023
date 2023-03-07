@@ -113,7 +113,15 @@ Notice that when you do so, the Knit menu is replaced.
 Then we can add the code chunk listed in the document.Before running this code, however, we should set the code chunk options for the previous code chunks so that they are not run (eval) and not shown (echo). 
 
 ```{r, echo=FALSE}
+numericInput(
+  inputId = "n",
+  label = "How many cars?",
+  value = 5)
 
+#renderPrint(paste("You chose", input$n))
+renderTable ({
+  head(cars, input$n)
+})
 ```
 
 Shiny has many other input widgets: https://shiny.rstudio.com/gallery/widget-gallery.html. Below we'll use a Select Box widget to specifiy the variable shown in our plot. We'll also add a slider range to limit the date shown in our plot. 
@@ -121,12 +129,13 @@ Shiny has many other input widgets: https://shiny.rstudio.com/gallery/widget-gal
 Note: Before running this plot, set the previous code chunk to not evaluate
 
 ```{r widget exploration, echo=FALSE}
-numericInput(
-  inputId = "nnn",
-  label = "How many cars?",
-  value = 5)
-
-renderPrint(paste("You chose", input$nnn))
+library(shiny)
+selectInput(
+  inputId = "the_parameter",
+  label = "select the parameter to plot",
+  choices = c('tp_ug', 'tn_ug'),
+  selected = 'tp_ug')
+renderPlot(plot_it(input$the_parameter, 1990,1993))
 ```
 
 

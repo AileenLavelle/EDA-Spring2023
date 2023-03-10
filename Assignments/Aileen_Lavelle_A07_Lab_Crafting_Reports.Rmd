@@ -3,6 +3,7 @@ title: 'A07 - Crafting Reports'
 author: "Aileen Lavelle" 
 date: "Spring 2023"
 output: pdf_document
+toc: true
 ---
 
 ## Objectives:
@@ -134,3 +135,5 @@ plot_grid(Ozone2018, Ozone2019, nrow=1, labels=c(''))
 Add a table of contents to your document and knit to a PDF. Submit your PDF to Sakai, but also be sure to commit and push your Rmd file used to create this knit document to GitHub. In the section below, add a link to your GitHub repository.
 
 ### Git Repository
+
+<https://github.com/AileenLavelle/EDA-Spring2023.git>

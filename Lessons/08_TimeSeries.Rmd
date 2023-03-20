@@ -17,7 +17,7 @@ editor_options:
 
 Today we will work with two datasets. The USGS dataset on discharge at the Eno River and a new dataset we haven't explored yet on wind speed. The data file is available at "./Data/Raw/Wind_Speed_PortArthurTX.csv". It contains average wind speed in monthly time steps (elevation = 5 meters). The data is available from NOAA National Centers for Environmental Information (NCEI) [here][https://www.ncdc.noaa.gov/cdo-web/datasets#GSOM].
 
-```{r, message = FALSE}
+```{r package uploading, message = FALSE}
 
 library(tidyverse)
 library(lubridate)
@@ -76,7 +76,7 @@ River discharge is measured daily at the Eno River gage station. Since we are wo
 
 Let's look at what the dataset contains for mean daily discharge.
 
-```{r}
+```{r view data}
 ggplot(EnoDischarge, aes(x = datetime, y = discharge.mean)) +
   geom_line() +
   labs(x = "", y = expression("Discharge (ft"^3*"/s)"))
@@ -86,7 +86,7 @@ Notice there are missing data from 1971 to 1985. Gaps this large are generally a
 
 Let's start by removing the NAs and splitting the dataset into the early and late years. 
 
-```{r}
+```{r remove NA and seperate years}
 EnoDischarge.complete <- EnoDischarge %>%
   drop_na(discharge.mean)
 
@@ -114,13 +114,13 @@ We first need to turn the discharge data into a time series object in R. This is
 
 Note: time series objects must be equispaced. In our case, we have daily data with no NAs in the data frame, so we don't need to worry about this. We will cover how to address data that are not equispaced later in the lesson.
 
-```{r}
+```{r create time series object}
 EnoDischarge.late_ts <- ts(EnoDischarge.late$discharge.mean, start = c(1985,1), frequency = 365)
 ```
 
 The `stl` function decomposes the time series object into its component parts. We must specify that the window for seasonal extraction is either "periodic" or a specific number of at least 7. The decomposition proceeds through a loess (locally estimated scatterplot smoothing) function.
 
-```{r}
+```{r decompose time series}
 ?stl
 # Generate the decomposition
 EnoDischarge.late_Decomposed <- stl(EnoDischarge.late_ts, s.window = "periodic")

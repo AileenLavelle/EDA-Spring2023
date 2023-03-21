@@ -164,6 +164,7 @@ BR_Temperature_Components <- mutate(BR_Temperature_Components,
 ggplot(BR_Rainfall_Components) +
   geom_line(aes(y = Observed, x = Date),  size = 0.25) +
   geom_line(aes(y = trend, x = Date), color = "#c13d75ff") +
+  #geom_line(aes(y = seasonal), col="green") +
   geom_hline(yintercept = 50, lty = 2) +
   ylab(expression("Rainfall (cm)"))
 

@@ -134,7 +134,13 @@ st_crs(huc8_sf)
 head(huc8_sf)
 
 #View the data as a map, colored by the acreage in each
+#mapview map
 mapview(huc8_sf, zcol = "ACRES")
+#ggplot map
+ggplot() +
+  geom_sf(dat=huc8_sf, aes(fill=ACRES))+
+  scale_fill_distiller(palette="YlOrRd")
+
 ```
 
 ### 2.2.3 Challenge!
@@ -146,9 +152,11 @@ mapview(huc8_sf, zcol = "ACRES")
 upperNeuse_sf <- st_read('./Data/Spatial/NCHUC8.shp') %>% 
   filter(SUBBASIN == "Upper Neuse")
 #Create a map
-mapview(huc8_sf, col.regions ="pink") +
-  mapview(upperNeuse_sf, col.regions = "purple")
+mapview(huc8_sf, col.regions ="cornflowerblue") +
+  mapview(upperNeuse_sf, col.regions = "darkorchid")
+
 ```
+
 
 ### 2.2.4 Reading in GeoJSON data
 
@@ -251,8 +259,10 @@ wind_energy_huc8 <- read.csv('https://raw.githubusercontent.com/ENV859/EnviroAtl
   summarize(SumWindEnergy = sum(AvgWindEnergy))
   
 #Join to HUC_8 features
-huc8_sf_join = huc8_sf %>% 
-  left_join(wind_energy_huc8, by= c("HUC_8", "HUC_8"))
+huc8_sf_join <- merge(x=huc8_sf,
+                     y= wind_energy_huc8,
+                     by.x ="HUC_8",
+                     by.y ="HUC_8")
 
 
  #View the outputs
@@ -284,14 +294,17 @@ mapview(state_sf)
 
 ```{r Aggregate the HUC data on an attribute, saving as huc2_sf}
 #List the unique values in the DWQ_Basin field
-
-
+unique(huc8s_WGS84$DWQ_Basin) 
 
 #Summarize on DWQ Basin value
-
+summary(huc8s_WGS84$DWQ_Basin)
 
 #Map the data
+huc2_sf <- huc8s_WGS84 %>%
+  summarise(ACRES_Sum = sum(ACRES)) %>%
+  summarise(SQMiles_Sum = sum(SQ_MILES))      
 
+mapview(huc2_sf)
 
 ```
 
@@ -455,6 +468,7 @@ theSite_sfc_transformed <- st_transform(theSite_sfc, crs = st_crs(counties_sf_ut
 resultMask <- st_intersects(counties_sf_utm, 
                             theSite_sfc_transformed,
                             sparse = FALSE) #The `sparse` option returns a Boolean mask
+#can also use st_filter instead of st_intersect
 
 #Filter the counties dataset using the boolean mask
 selCounties <- counties_sf_utm[resultMask,]
@@ -469,7 +483,6 @@ mapView(counties_sf[resultMask,])
 ```{r Select counties within a 30 km area from the site}
 the_site_counties <- theSite_sfc_transformed %>% 
   st_buffer(.,dist=30000)
-
 
                             
 ```

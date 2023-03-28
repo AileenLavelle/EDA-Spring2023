@@ -49,6 +49,11 @@ library(lubridate)
 library(sf)
 library(mapview); mapviewOptions(fgb = FALSE)
 library(RColorBrewer)
+library(bit64)
+#install.packages("bit")
+library(bit)
+#install.packages("s2")
+library(s2)
 ```
 
 # 2 READING IN SPATIAL DATA
@@ -88,7 +93,7 @@ Below we read in the USA counties shapefile, filtering for just the NC features 
 
 ```{r read.filtered.records.from.shapefile.to.sf.object}
 #
-counties_sf<- st_read('./Data/Spatial/cb_2018_us_county_20m.shp') %>% 
+counties_sf <- st_read('./Data/Spatial/cb_2018_us_county_20m.shp') %>% 
   filter(STATEFP == 37) #Filter for just NC Counties
 
 #
@@ -143,9 +148,6 @@ upperNeuse_sf <- st_read('./Data/Spatial/NCHUC8.shp') %>%
 #Create a map
 mapview(huc8_sf, col.regions ="pink") +
   mapview(upperNeuse_sf, col.regions = "purple")
-
-
-
 ```
 
 ### 2.2.4 Reading in GeoJSON data
@@ -242,26 +244,24 @@ ggplot() +
 
 ```{r}
 #Compute HUC8 wind energy
-wind_raw <- read.csv('https://raw.githubusercontent.com/ENV859/EnviroAtlasData/main/Wind_Energy.csv',
+wind_energy_huc8 <- read.csv('https://raw.githubusercontent.com/ENV859/EnviroAtlasData/main/Wind_Energy.csv',
   colClasses = c('HUC_12' = 'factor')) %>%  
   mutate(HUC_8 = substr(HUC_12,1,8)) %>% 
   group_by(HUC_8) %>% 
   summarize(SumWindEnergy = sum(AvgWindEnergy))
   
 #Join to HUC_8 features
-huc8_sf_join = merge(x = huc8_sf,
-                     y = wind_raw,
-                     by.x = 'HUC_8',
-                     by.y = 'HUC_8')
+huc8_sf_join = huc8_sf %>% 
+  left_join(wind_energy_huc8, by= c("HUC_8", "HUC_8"))
 
-#View the outputs
+
+ #View the outputs
 ggplot(data=huc8_sf_join) +
   geom_sf(aes(fill=SumWindEnergy)) +
   labs(
     title='Wind energy by HUC 8',
     fill ='MW/year'
   )
-
 ```
 
 ## 3.1 Spatial data aggregation with `group_by` and `summarize`.

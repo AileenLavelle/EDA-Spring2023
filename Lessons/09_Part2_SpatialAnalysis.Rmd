@@ -316,6 +316,7 @@ What I'm getting at is: it's often a good idea to project data before doing spat
 On top of projecting any geographic data to adjust for the limitations of the software, you'll also be wise to ensure all use the same CRS. This can be done with the `st_transform` command, supplying the EPSG code of the CRS that you want your data to be in. Let's get our main five sf objects all into a consistent CRS.
 
 ```{r Transform the datasets to other coordinate reference systems}
+huc2_sf <- st_read('./Data/Spatial/NCHUC8.shp')
 #Convert all to UTM Zone 17 (crs = 26917)
 epa_sf_utm <-      st_transform(epa_pm25_sites_sf, crs = 26917)
 counties_sf_utm <- st_transform(counties_sf, crs = 26917)
@@ -371,15 +372,16 @@ mapview(neuse_counties_sf, zcol='Area_m2')
 
 ```{r EXERCISE: Clipping}
 #Select the Triangle County from the 
-
-
-  
+the_triangle <- counties_sf_utm %>%
+  filter(NAME %in% c("Chatham", "Durham", "Orange", "Wake"))
 #Grab the intersecting HUC_8s
+the_hucs <- huc8_sf_utm[the_triangle,]
 
-
-
+mapview(the_hucs) + mapview(the_triangle, alpha.regions = 0, color = 'red')
 #Intersect the HUC_8s
-
+the_huc_clip <- huc2_utm %>%
+  st_intersection(the_triangle)
+mapview(the_huc_clip) + mapview(the_triangle, alpha.regions = 0, color = 'red')
 
 
 ```

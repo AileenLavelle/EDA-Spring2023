@@ -365,6 +365,9 @@ neuse_intersect_1 <- counties_sf_utm[neuse_sf,]
 neuse_intersect_2 <- counties_sf_utm %>% 
   filter(st_intersects(x = ., y = neuse_sf, sparse = FALSE))
 
+neuse_intersect_3 <- counties_sf_utm %>% 
+  st_filter(neuse_sf)
+
 #View the result
 myMap + mapview(neuse_intersect_2, alpha.regions = 0)
 

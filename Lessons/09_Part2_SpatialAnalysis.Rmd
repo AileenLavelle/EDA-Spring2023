@@ -397,7 +397,7 @@ mapview(the_hucs) + mapview(the_triangle, alpha.regions = 0, color = 'red')
 #Intersect the HUC_8s
 the_huc_clip <- huc2_utm %>%
   st_intersection(the_triangle)
-mapview(the_huc_clip) + mapview(the_triangle, alpha.regions = 0, color = 'red')
+mapview(the_huc_clip) + mapview(the_triangle, alpha.regions = 0, color = 'yellow')
 
 
 ```

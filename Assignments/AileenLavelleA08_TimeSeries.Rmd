@@ -205,12 +205,12 @@ plot(GaringerOzone.monthly.decomp)
 
 ```{r}
 #12
-GaringerOzone.monthlytrend <- mk.test(GaringerOzone.monthly.ts)
+GaringerOzone.monthlytrend <- Kendall:: SeasonalMannKendall(GaringerOzone.monthly.ts)
 GaringerOzone.monthlytrend
 summary(GaringerOzone.monthlytrend)
 ```
 
-> Answer: Mann-Kendall is used in this case because it assumes no seasonality, allows for missing data and is non-parametric. 
+> Answer: Seasonal Mann-Kendall is used in this case because it assumes seasonality, allows for missing data and is non-parametric. 
 
 13. Create a plot depicting mean monthly ozone concentrations over time, with both a geom_point and a geom_line layer. Edit your axis labels accordingly.
 
@@ -229,13 +229,12 @@ ggplot(GaringerOzone.monthly, aes(x=factor(Year), y = meanOzone, color=as.factor
     y= "Monthly Mean Ozone Concentration (ppm)",
     color= "Month") +
   scale_color_manual(values = c("red", "#FF7256", "orange","#FFD700", "yellow", "green", "aquamarine", "lightblue", "blue", "purple", "pink", "deeppink"))
-  
 print(MonthlyMeanOzone) + Aileentheme
 ```
 
 14. To accompany your graph, summarize your results in context of the research question. Include output from the statistical test in parentheses at the end of your sentence. Feel free to use multiple sentences in your interpretation.
 
-> Answer: The summer and spring months have the highest average monthly mean ozone concentrations. Throughout the study period we can see an overall trend of a slight decreasing ozone concentrations, in all months S = -7.520000e+02 (p-value = 0.088). 
+> Answer: The summer and spring months have the highest average monthly mean ozone concentrations. Throughout the study period we can see an overall trend of a slight decreasing ozone concentrations, in all months S = -7.520000e+02 (p-value = 0.16323). 
 
 15. Subtract the seasonal component from the `GaringerOzone.monthly.ts`. Hint: Look at how we extracted the series components for the EnoDischarge on the lesson Rmd file.
 
@@ -249,19 +248,23 @@ plot(GaringerOzone.monthly_Components)
 GaringerOzone.monthly_noseason <- as.data.frame(GaringerOzone.monthly.decomp$time.series[,2:3])
 plot(GaringerOzone.monthly_noseason)
 
-GaringerOzone.monthly_noseason <- mutate(GaringerOzone.monthly_noseason,
+GaringerOzone.monthly_noseason <- mutate(GaringerOzone.monthly_Components,
         Observed = GaringerOzone.monthly$meanOzone,     
         Date = GaringerOzone.monthly$Date)
 
+GaringerOzone.monthly_noseason <- GaringerOzone.monthly_noseason %>%
+      mutate(NoSeasonality = (Observed - seasonal))
 #16
-firstmonth <- month(first(GaringerOzone.monthly$Date))
-firstyear <- year(first(GaringerOzone.monthly$Date))
-
-GaringerOzone.monthlycomponents.ts <- ts(GaringerOzone.monthly_noseason$trend,
-                   start=c(f_year,f_month),
+#non-seasonal time series
+GaringerOzone.monthlycomponents.ts <- ts(GaringerOzone.monthly_noseason$NoSeasonality,
+                   start=c(2010, 1),
                    frequency=12) 
-
-mk.test(GaringerOzone.monthly_noseason)
+Kendall::MannKendall(GaringerOzone.monthlycomponents.ts)
+summary(GaringerOzone.monthlycomponents.ts)
+#seasonal time series
+GaringerOzone.monthlytrend <- Kendall:: SeasonalMannKendall(GaringerOzone.monthly.ts)
+GaringerOzone.monthlytrend
+summary(GaringerOzone.monthlytrend)
 ```
 
-> Answer: 
+> Answer: This p value is smaller than the p value of the non-seasonality (0.10<0.16). This makes sense as ozone levels vary with season and subtracting this component indicates weak evidence against the null hypothesis.

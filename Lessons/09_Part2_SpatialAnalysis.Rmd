@@ -49,6 +49,11 @@ library(lubridate)
 library(sf)
 library(mapview); mapviewOptions(fgb = FALSE)
 library(RColorBrewer)
+library(bit64)
+#install.packages("bit")
+library(bit)
+#install.packages("s2")
+library(s2)
 ```
 
 # 2 READING IN SPATIAL DATA
@@ -88,7 +93,7 @@ Below we read in the USA counties shapefile, filtering for just the NC features 
 
 ```{r read.filtered.records.from.shapefile.to.sf.object}
 #
-counties_sf<- st_read('./Data/Spatial/cb_2018_us_county_20m.shp') %>% 
+counties_sf <- st_read('./Data/Spatial/cb_2018_us_county_20m.shp') %>% 
   filter(STATEFP == 37) #Filter for just NC Counties
 
 #
@@ -117,21 +122,24 @@ mapView(counties_sf, zcol = "AWATER")
 
 ```{r read HUCs shapefile}
 #Read the shapefile into an sf dataframe named "huc8_sf"
-
+huc8_sf <- st_read('./Data/Spatial/NCHUC8.shp')
 
 #Reveal the columns
-
+colnames(huc8_sf)
 
 #Check the CRS
-
+st_crs(huc8_sf)
 
 #Examine some records
 head(huc8_sf)
 
 #View the data as a map, colored by the acreage in each
-
-
-
+#mapview map
+mapview(huc8_sf, zcol = "ACRES")
+#ggplot map
+ggplot() +
+  geom_sf(dat=huc8_sf, aes(fill=ACRES))+
+  scale_fill_distiller(palette="YlOrRd")
 
 ```
 
@@ -141,15 +149,14 @@ head(huc8_sf)
 
 ```{r Select the Upper Neuse HUC 8}
 #Read the shapefile into an sf dataframe
-
-
-
+upperNeuse_sf <- st_read('./Data/Spatial/NCHUC8.shp') %>% 
+  filter(SUBBASIN == "Upper Neuse")
 #Create a map
-
-
-
+mapview(huc8_sf, col.regions ="cornflowerblue") +
+  mapview(upperNeuse_sf, col.regions = "darkorchid")
 
 ```
+
 
 ### 2.2.4 Reading in GeoJSON data
 
@@ -245,26 +252,26 @@ ggplot() +
 
 ```{r}
 #Compute HUC8 wind energy
-wind_raw <- read.csv('https://raw.githubusercontent.com/ENV859/EnviroAtlasData/main/Wind_Energy.csv',
+wind_energy_huc8 <- read.csv('https://raw.githubusercontent.com/ENV859/EnviroAtlasData/main/Wind_Energy.csv',
   colClasses = c('HUC_12' = 'factor')) %>%  
   mutate(HUC_8 = substr(HUC_12,1,8)) %>% 
   group_by(HUC_8) %>% 
   summarize(SumWindEnergy = sum(AvgWindEnergy))
   
 #Join to HUC_8 features
-huc8_sf_join = merge(x = huc8_sf,
-                     y = wind_raw,
-                     by.x = 'HUC_8',
-                     by.y = 'HUC_8')
+huc8_sf_join <- merge(x=huc8_sf,
+                     y= wind_energy_huc8,
+                     by.x ="HUC_8",
+                     by.y ="HUC_8")
 
-#View the outputs
+
+ #View the outputs
 ggplot(data=huc8_sf_join) +
   geom_sf(aes(fill=SumWindEnergy)) +
   labs(
     title='Wind energy by HUC 8',
     fill ='MW/year'
   )
-
 ```
 
 ## 3.1 Spatial data aggregation with `group_by` and `summarize`.
@@ -287,14 +294,17 @@ mapview(state_sf)
 
 ```{r Aggregate the HUC data on an attribute, saving as huc2_sf}
 #List the unique values in the DWQ_Basin field
-
-
+unique(huc8s_WGS84$DWQ_Basin) 
 
 #Summarize on DWQ Basin value
-
+summary(huc8s_WGS84$DWQ_Basin)
 
 #Map the data
+huc2_sf <- huc8s_WGS84 %>%
+  summarise(ACRES_Sum = sum(ACRES)) %>%
+  summarise(SQMiles_Sum = sum(SQ_MILES))      
 
+mapview(huc2_sf)
 
 ```
 
@@ -319,6 +329,7 @@ What I'm getting at is: it's often a good idea to project data before doing spat
 On top of projecting any geographic data to adjust for the limitations of the software, you'll also be wise to ensure all use the same CRS. This can be done with the `st_transform` command, supplying the EPSG code of the CRS that you want your data to be in. Let's get our main five sf objects all into a consistent CRS.
 
 ```{r Transform the datasets to other coordinate reference systems}
+huc2_sf <- st_read('./Data/Spatial/NCHUC8.shp')
 #Convert all to UTM Zone 17 (crs = 26917)
 epa_sf_utm <-      st_transform(epa_pm25_sites_sf, crs = 26917)
 counties_sf_utm <- st_transform(counties_sf, crs = 26917)
@@ -354,6 +365,9 @@ neuse_intersect_1 <- counties_sf_utm[neuse_sf,]
 neuse_intersect_2 <- counties_sf_utm %>% 
   filter(st_intersects(x = ., y = neuse_sf, sparse = FALSE))
 
+neuse_intersect_3 <- counties_sf_utm %>% 
+  st_filter(neuse_sf)
+
 #View the result
 myMap + mapview(neuse_intersect_2, alpha.regions = 0)
 
@@ -374,15 +388,16 @@ mapview(neuse_counties_sf, zcol='Area_m2')
 
 ```{r EXERCISE: Clipping}
 #Select the Triangle County from the 
-
-
-  
+the_triangle <- counties_sf_utm %>%
+  filter(NAME %in% c("Chatham", "Durham", "Orange", "Wake"))
 #Grab the intersecting HUC_8s
+the_hucs <- huc8_sf_utm[the_triangle,]
 
-
-
+mapview(the_hucs) + mapview(the_triangle, alpha.regions = 0, color = 'red')
 #Intersect the HUC_8s
-
+the_huc_clip <- huc2_utm %>%
+  st_intersection(the_triangle)
+mapview(the_huc_clip) + mapview(the_triangle, alpha.regions = 0, color = 'yellow')
 
 
 ```
@@ -456,6 +471,7 @@ theSite_sfc_transformed <- st_transform(theSite_sfc, crs = st_crs(counties_sf_ut
 resultMask <- st_intersects(counties_sf_utm, 
                             theSite_sfc_transformed,
                             sparse = FALSE) #The `sparse` option returns a Boolean mask
+#can also use st_filter instead of st_intersect
 
 #Filter the counties dataset using the boolean mask
 selCounties <- counties_sf_utm[resultMask,]
@@ -470,7 +486,6 @@ mapView(counties_sf[resultMask,])
 ```{r Select counties within a 30 km area from the site}
 the_site_counties <- theSite_sfc_transformed %>% 
   st_buffer(.,dist=30000)
-
 
                             
 ```

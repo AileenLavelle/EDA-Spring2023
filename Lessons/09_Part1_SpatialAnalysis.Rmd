@@ -117,7 +117,8 @@ EPAair.sites <- EPAair %>%
 EPAair.sf <- EPAair.sites %>% 
   st_as_sf(coords = c('mean_Lng','mean_Lat'),
            crs=4326)
-
+#long is x, lat is y
+class(EPAair.sf)
 #View the data using the methods above...
 
 ```
